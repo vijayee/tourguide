@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/nsf/termbox-go"
 	"github.com/vijayee/termbox-menu"
+	"os/exec"
+	"regexp"
 	"strings"
 	"unicode/utf8"
 )
@@ -12,21 +14,25 @@ type Article interface {
 	Title() string
 	Text() string
 }
+
 type Passage struct {
 	article         Article
 	foreground      termbox.Attribute
 	background      termbox.Attribute
 	keyEventService chan termbox.Event
 	isFocused       bool
+	hasFailed       bool
+	failMessages    string
 }
 
 func NewPassage(article Article, foreground termbox.Attribute, background termbox.Attribute) Passage {
-	return Passage{article, foreground, background, nil, false}
+	return Passage{article, foreground, background, nil, false, false, ""}
 
 }
 func (p *Passage) drawTitle() {
 	w, _ := termbox.Size()
 	title := p.article.Title()
+
 	titleStart := (w / 2) - (len(title) / 2)
 	titleRow := 2
 	titleIndex := 0
@@ -44,7 +50,13 @@ func (p *Passage) drawTitle() {
 func (p *Passage) drawContent() {
 	w, h := termbox.Size()
 	currrentRow := 5
-	text := fmt.Sprintf("%+q", p.article.Text())
+	var text string
+	if p.hasFailed {
+		text = p.failMessages
+	} else {
+		text = fmt.Sprintf("%+q", p.article.Text())
+	}
+
 	text = strings.Replace(text, "\\t", "  ", -1)
 	if text != "\"\"" {
 		text = text[1 : len(text)-2]
@@ -90,7 +102,31 @@ func (p *Passage) Draw() error {
 	termbox.Flush()
 	return nil
 }
+func (p *Passage) verify() {
+	var (
+		cmdOut []byte
+		err    error
+	)
+	cmdName := "go"
+	cmdArgs := []string{"test", "touguide/tour"}
+	if cmdOut, err = exec.Command(cmdName, cmdArgs...).Output(); err != nil {
+		output := string(cmdOut)
+		passed, _ := regexp.MatchString("PASS", output)
+		if passed {
+			p.hasFailed = false
 
+		} else {
+			r, _ := regexp.Compile(`(:[0-9]*:[\s\w].*\n)`)
+			r2, _ := regexp.Compile(`:[0-9]*:[\s]`)
+			p.hasFailed = true
+			ss := r.FindAllString(output, -1)
+			for _, s := range ss {
+				s = r2.ReplaceAllString(s, "")
+
+			}
+		}
+	}
+}
 func (p *Passage) ListenToKeys() {
 	p.keyEventService = make(chan termbox.Event)
 	menu.Subscribe(p.keyEventService)
@@ -104,6 +140,14 @@ func (p *Passage) ListenToKeys() {
 				case termbox.KeyEsc:
 					if p.isFocused == true {
 						return
+					}
+
+				case termbox.KeyEnter:
+					if p.isFocused == true {
+						go func() {
+							p.verify()
+							p.Draw()
+						}()
 					}
 				}
 			case termbox.EventError:

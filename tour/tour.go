@@ -6,6 +6,7 @@ import (
 	"github.com/vijayee/tourguide/passage"
 	"strconv"
 	"strings"
+	"testing"
 )
 
 var log = u.Logger("tour")
@@ -32,8 +33,9 @@ type Topic struct {
 }
 
 type Content struct {
-	Title string
-	Text  string
+	Title  string
+	Text   string
+	Verify func(t *testing.T)
 }
 
 // Topics is a sorted list of topic IDs
