@@ -58,8 +58,8 @@ func (p *Passage) drawContent() {
 	}
 
 	text = strings.Replace(text, "\\t", "  ", -1)
-	if text != "\"\"" {
-		text = text[1 : len(text)-2]
+	if text != "\"\"" && len(text) > 1 {
+		text = text[0 : len(text)-2]
 	} else {
 		text = ""
 	}
@@ -108,20 +108,25 @@ func (p *Passage) verify() {
 		err    error
 	)
 	cmdName := "go"
-	cmdArgs := []string{"test", "touguide/tour"}
+	cmdArgs := []string{"test", "github.com/vijayee/tourguide/tour"}
 	if cmdOut, err = exec.Command(cmdName, cmdArgs...).Output(); err != nil {
 		output := string(cmdOut)
 		passed, _ := regexp.MatchString("PASS", output)
-		if passed {
+		buildFailed, _ := regexp.MatchString("build failed", output)
+		switch {
+		case buildFailed:
+			p.hasFailed = true
+			p.failMessages = "build failed"
+			fmt.Println(output)
+		case passed:
 			p.hasFailed = false
-
-		} else {
+		default:
 			r, _ := regexp.Compile(`(:[0-9]*:[\s\w].*\n)`)
 			r2, _ := regexp.Compile(`:[0-9]*:[\s]`)
 			p.hasFailed = true
 			ss := r.FindAllString(output, -1)
 			for _, s := range ss {
-				s = r2.ReplaceAllString(s, "")
+				p.failMessages += fmt.Sprintln(r2.ReplaceAllString(s, ""))
 
 			}
 		}
