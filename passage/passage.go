@@ -13,6 +13,7 @@ import (
 type Article interface {
 	Title() string
 	Text() string
+	Mark()
 }
 
 type Passage struct {
@@ -109,17 +110,18 @@ func (p *Passage) verify() {
 	)
 	cmdName := "go"
 	cmdArgs := []string{"test", "github.com/vijayee/tourguide/tour"}
-	if cmdOut, err = exec.Command(cmdName, cmdArgs...).Output(); err != nil {
+	if cmdOut, err = exec.Command(cmdName, cmdArgs...).Output(); err == nil {
 		output := string(cmdOut)
-		passed, _ := regexp.MatchString("PASS", output)
+		passed, _ := regexp.MatchString("ok", output)
 		buildFailed, _ := regexp.MatchString("build failed", output)
+
 		switch {
 		case buildFailed:
 			p.hasFailed = true
 			p.failMessages = "build failed"
-			fmt.Println(output)
 		case passed:
 			p.hasFailed = false
+			p.article.Mark()
 		default:
 			r, _ := regexp.Compile(`(:[0-9]*:[\s\w].*\n)`)
 			r2, _ := regexp.Compile(`:[0-9]*:[\s]`)
@@ -130,6 +132,8 @@ func (p *Passage) verify() {
 
 			}
 		}
+	} else {
+		panic(err)
 	}
 }
 func (p *Passage) ListenToKeys() {

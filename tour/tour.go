@@ -30,6 +30,7 @@ func (a IDSlice) Less(i, j int) bool { return a[i].LessThan(a[j]) }
 type Topic struct {
 	ID ID
 	Content
+	hasPassed bool
 }
 
 type Content struct {
@@ -53,11 +54,19 @@ func NextTopic(topic ID) ID {
 	}
 	return topic // last one, it seems.
 }
+func (t *Topic) Mark() {
+	t.hasPassed = true
+}
 func (t *Topic) Text() string {
 	return t.Content.Text
 }
 func (t *Topic) Title() string {
-	return string(t.ID) + "  " + t.Content.Title
+	if t.hasPassed {
+		return "\u2713 " + string(t.ID) + "  " + t.Content.Title
+	} else {
+		return string(t.ID) + "  " + t.Content.Title
+	}
+
 }
 func (t *Topic) Invoke() error {
 	p := passage.NewPassage(t, termbox.ColorWhite, termbox.ColorBlue)
