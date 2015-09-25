@@ -1,12 +1,12 @@
 package tour
 
 import (
+	"errors"
 	u "github.com/ipfs/go-ipfs/util"
 	"github.com/nsf/termbox-go"
 	"github.com/vijayee/tourguide/passage"
 	"strconv"
 	"strings"
-	"testing"
 )
 
 var log = u.Logger("tour")
@@ -36,7 +36,7 @@ type Topic struct {
 type Content struct {
 	Title  string
 	Text   string
-	Verify func(t *testing.T)
+	verify func([]byte) (bool, error)
 }
 
 // Topics is a sorted list of topic IDs
@@ -44,6 +44,8 @@ var IDs []ID
 
 // Topics contains a mapping of Tour Topic ID to Topic
 var Topics = map[ID]Topic{}
+
+var VerifcationInput []byte
 
 // NextTopic returns the next in-order topic
 func NextTopic(topic ID) ID {
@@ -55,6 +57,7 @@ func NextTopic(topic ID) ID {
 	return topic // last one, it seems.
 }
 func (t *Topic) Mark() {
+
 	t.hasPassed = true
 }
 func (t *Topic) Text() string {
@@ -62,12 +65,19 @@ func (t *Topic) Text() string {
 }
 func (t *Topic) Title() string {
 	if t.hasPassed {
-		return "\u2713 " + string(t.ID) + "  " + t.Content.Title
+		return "\u2713" + string(t.ID) + "  " + t.Content.Title
 	} else {
 		return string(t.ID) + "  " + t.Content.Title
 	}
 
 }
+func (t *Topic) Verify() (bool, error) {
+	if t.Content.verify == nil {
+		return false, errors.New("Content has no verification method")
+	}
+	return t.Content.verify(VerifcationInput)
+}
+
 func (t *Topic) Invoke() error {
 	p := passage.NewPassage(t, termbox.ColorWhite, termbox.ColorBlue)
 	p.Draw()

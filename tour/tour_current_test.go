@@ -16,7 +16,7 @@ func TestCurrentTopic(t *testing.T) {
 
 			return
 
-			//t.Error("This should always fail")
+			t.Error("This should always fail")
 		}
 		Topics[key] = c
 	}

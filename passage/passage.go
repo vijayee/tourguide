@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"github.com/nsf/termbox-go"
 	"github.com/vijayee/termbox-menu"
-	"os/exec"
-	"regexp"
 	"strings"
 	"unicode/utf8"
 )
@@ -14,6 +12,7 @@ type Article interface {
 	Title() string
 	Text() string
 	Mark()
+	Verify() (bool, error)
 }
 
 type Passage struct {
@@ -52,6 +51,7 @@ func (p *Passage) drawContent() {
 	w, h := termbox.Size()
 	currrentRow := 5
 	var text string
+
 	if p.hasFailed {
 		text = p.failMessages
 	} else {
@@ -60,7 +60,13 @@ func (p *Passage) drawContent() {
 
 	text = strings.Replace(text, "\\t", "  ", -1)
 	if text != "\"\"" && len(text) > 1 {
-		text = text[0 : len(text)-2]
+		//trim weird quotes
+		if text[0] == '\u0022' {
+			text = text[1 : len(text)-1]
+		}
+		if text[len(text)-1] == '\u0022' {
+			text = text[0 : len(text)-2]
+		}
 	} else {
 		text = ""
 	}
@@ -79,7 +85,7 @@ func (p *Passage) drawContent() {
 			for x := 0; x < w; x++ {
 				var c rune
 				var rw int
-				if x >= lineStart && x < lineEnd && lineIndex < len(line) {
+				if x > lineStart && x < lineEnd && lineIndex < len(line) {
 					c, rw = utf8.DecodeRuneInString(line[lineIndex:])
 					lineIndex += rw
 					lineStart += rw
@@ -103,39 +109,18 @@ func (p *Passage) Draw() error {
 	termbox.Flush()
 	return nil
 }
+
 func (p *Passage) verify() {
-	var (
-		cmdOut []byte
-		err    error
-	)
-	cmdName := "go"
-	cmdArgs := []string{"test", "github.com/vijayee/tourguide/tour"}
-	if cmdOut, err = exec.Command(cmdName, cmdArgs...).Output(); err == nil {
-		output := string(cmdOut)
-		passed, _ := regexp.MatchString("ok", output)
-		buildFailed, _ := regexp.MatchString("build failed", output)
-
-		switch {
-		case buildFailed:
-			p.hasFailed = true
-			p.failMessages = "build failed"
-		case passed:
-			p.hasFailed = false
-			p.article.Mark()
-		default:
-			r, _ := regexp.Compile(`(:[0-9]*:[\s\w].*\n)`)
-			r2, _ := regexp.Compile(`:[0-9]*:[\s]`)
-			p.hasFailed = true
-			ss := r.FindAllString(output, -1)
-			for _, s := range ss {
-				p.failMessages += fmt.Sprintln(r2.ReplaceAllString(s, ""))
-
-			}
-		}
+	result, err := p.article.Verify()
+	if result {
+		p.hasFailed = false
+		p.article.Mark()
 	} else {
-		panic(err)
+		p.hasFailed = true
+		p.failMessages = err.Error()
 	}
 }
+
 func (p *Passage) ListenToKeys() {
 	p.keyEventService = make(chan termbox.Event)
 	menu.Subscribe(p.keyEventService)

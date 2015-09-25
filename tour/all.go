@@ -1,6 +1,11 @@
 package tour
 
-import "sort"
+import (
+	"errors"
+	"regexp"
+	"sort"
+	"strings"
+)
 
 func Init() {
 	for _, t := range allTopics {
@@ -132,16 +137,43 @@ var IntroHelloMars = Content{
 	Bacon ipsum dolor amet swine biltong pork loin tail shoulder short loin. Filet mignon spare ribs chuck, kevin ribeye tail pancetta. Biltong salami landjaeger jowl. Ham turkey biltong, swine kielbasa alcatra doner shank rump picanha chuck.
 
 Short loin frankfurter prosciutto tail, bresaola boudin flank picanha ham hock kevin. Beef turducken pork belly cupim. Capicola alcatra prosciutto strip steak brisket turkey chuck shank jerky picanha ground round. Turkey sirloin pork loin picanha t-bone ribeye.
+Bacon ipsum dolor amet swine biltong pork loin tail shoulder short loin. Filet mignon spare ribs chuck, kevin ribeye tail pancetta. Biltong salami landjaeger jowl. Ham turkey biltong, swine kielbasa alcatra doner shank rump picanha chuck.
+
+Short loin frankfurter prosciutto tail, bresaola boudin flank picanha ham hock kevin. Beef turducken pork belly cupim. Capicola alcatra prosciutto strip steak brisket turkey chuck shank jerky picanha ground round. Turkey sirloin pork loin picanha t-bone ribeye.
+Bacon ipsum dolor amet swine biltong pork loin tail shoulder short loin. Filet mignon spare ribs chuck, kevin ribeye tail pancetta. Biltong salami landjaeger jowl. Ham turkey biltong, swine kielbasa alcatra doner shank rump picanha chuck.
+
+Short loin frankfurter prosciutto tail, bresaola boudin flank picanha ham hock kevin. Beef turducken pork belly cupim. Capicola alcatra prosciutto strip steak brisket turkey chuck shank jerky picanha ground round. Turkey sirloin pork loin picanha t-bone ribeye.
 	`,
+	verify: func(stdin []byte) (bool, error) {
+		return true, nil
+	},
 }
 var IntroTour = Content{
 	Title: "Hello Mars",
 	Text: `
 	how this works
 	`,
+	verify: func(stdin []byte) (bool, error) {
+		var input = string(stdin)
+		if strings.Contains(input, "initializing ipfs node at") {
+			return true, nil
+		} else {
+			return false, errors.New("Initialization Failed")
+		}
+
+	},
 }
 var IntroAboutIpfs = Content{
 	Title: "About IPFS",
+	verify: func(stdin []byte) (bool, error) {
+		var input = string(stdin)
+		if strings.Contains(input, "initializing ipfs node at") {
+			return true, nil
+		} else {
+			return false, errors.New("Initialization Failed")
+		}
+
+	},
 }
 
 // File Basics
@@ -160,11 +192,42 @@ var FileBasicsAdding = Content{
 	Title: "Adding Files",
 	Text: `ipfs add
 	`,
+	verify: func(stdin []byte) (bool, error) {
+		var input = string(stdin)
+		re, err := regexp.Compile("added\\s([A-Za-z0-9]*)\\s([A-Za-z0-9]*)")
+		if err != nil {
+			return false, err
+		}
+		matches := re.FindStringSubmatch(input)
+		if len(matches) < 1 {
+			return false, errors.New("Add function failed:\n" + input)
+		}
+		if matches[1] != "" {
+			return true, nil
+		}
+		return false, errors.New("Verification failed")
+
+	},
 }
 var FileBasicsDirectories = Content{
 	Title: "Directories",
 	Text: `ipfs ls
 	`,
+	verify: func(stdin []byte) (bool, error) {
+		var input = string(stdin)
+		re, err := regexp.Compile("([A-Za-z0-9]*)\\s([0-9]*)\\s")
+		if err != nil {
+			return false, err
+		}
+		matches := re.FindStringSubmatch(input)
+		if len(matches) < 1 {
+			return false, errors.New("ls function failed:\n" + input)
+		}
+		if matches[1] != "" {
+			return true, nil
+		}
+		return false, errors.New("Verification failed")
+	},
 }
 var FileBasicsDistributed = Content{
 	Title: "Distributed",
