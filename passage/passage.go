@@ -23,10 +23,28 @@ type Passage struct {
 	isFocused       bool
 	hasFailed       bool
 	failMessages    string
+	displayStart    int
+	displayEnd      int
+	lines           []string
 }
 
 func NewPassage(article Article, foreground termbox.Attribute, background termbox.Attribute) Passage {
-	return Passage{article, foreground, background, nil, false, false, ""}
+	text := fmt.Sprintf("%+q", article.Text())
+	text = strings.Replace(text, "\\t", "  ", -1)
+	if text != "\"\"" && len(text) > 1 {
+		//trim weird quotes
+		if text[0] == '\u0022' {
+			text = text[1 : len(text)-1]
+		}
+		if text[len(text)-1] == '\u0022' {
+			text = text[0 : len(text)-2]
+		}
+	} else {
+		text = ""
+	}
+	lines := strings.Split(text, "\\n")
+
+	return Passage{article, foreground, background, nil, false, false, "", 0, 0, lines}
 
 }
 func (p *Passage) drawTitle() {
@@ -36,6 +54,20 @@ func (p *Passage) drawTitle() {
 	titleStart := (w / 2) - (len(title) / 2)
 	titleRow := 2
 	titleIndex := 0
+	instruction1 := "ESC: Back"
+	instruction2 := "Enter: Verify"
+	spaces := w - (len(instruction1) + len(instruction2))
+	space := ""
+	for s := 0; s < spaces; s++ {
+		space += " "
+	}
+	instructions := ""
+	instructions += instruction1
+	instructions += space
+	instructions += instruction2
+	for i, c := range instructions {
+		termbox.SetCell(i, 0, c, p.foreground, p.background)
+	}
 	for x := 0; x < w; x++ {
 		if x >= titleStart && titleIndex < len(title) {
 			c, rw := utf8.DecodeRuneInString(title[titleIndex:])
@@ -50,35 +82,37 @@ func (p *Passage) drawTitle() {
 func (p *Passage) drawContent() {
 	w, h := termbox.Size()
 	currrentRow := 5
-	var text string
-
+	var lines []string
 	if p.hasFailed {
-		text = p.failMessages
+		text := p.failMessages
+		text = strings.Replace(text, "\\t", "  ", -1)
+		if text != "\"\"" && len(text) > 1 {
+			//trim weird quotes
+			if text[0] == '\u0022' {
+				text = text[1 : len(text)-1]
+			}
+			if text[len(text)-1] == '\u0022' {
+				text = text[0 : len(text)-2]
+			}
+		} else {
+			text = ""
+		}
+		lines = strings.Split(text, "\\n")
 	} else {
-		text = fmt.Sprintf("%+q", p.article.Text())
+		lines = p.lines
 	}
 
-	text = strings.Replace(text, "\\t", "  ", -1)
-	if text != "\"\"" && len(text) > 1 {
-		//trim weird quotes
-		if text[0] == '\u0022' {
-			text = text[1 : len(text)-1]
-		}
-		if text[len(text)-1] == '\u0022' {
-			text = text[0 : len(text)-2]
-		}
-	} else {
-		text = ""
+	if p.displayEnd == 0 && len(lines) != 0 {
+		p.displayEnd = len(lines)
 	}
-	lines := strings.Split(text, "\\n")
-	for _, line := range lines {
+	for _, line := range lines[p.displayStart:] {
 		lineIndex := 0
 		lineStart := 3
 		lineEnd := w - lineStart
 		if len(line) == 0 {
 			continue
 		}
-		for lineIndex < len(line) {
+		for lineIndex < p.displayEnd {
 			if currrentRow > h {
 				break
 			}
@@ -99,6 +133,16 @@ func (p *Passage) drawContent() {
 			lineStart = 3
 		}
 		currrentRow++
+	}
+	if (p.displayEnd - p.displayStart) > (h - 3) {
+		a, _ := utf8.DecodeRuneInString("\u25BC")
+		termbox.SetCell(w-1, h-1, a, p.background, p.foreground)
+
+	}
+	if p.displayStart > 0 {
+		a, _ := utf8.DecodeRuneInString("\u25B2")
+		termbox.SetCell(w-1, 4, a, p.background, p.foreground)
+
 	}
 
 }
@@ -121,6 +165,19 @@ func (p *Passage) verify() {
 	}
 }
 
+func (p *Passage) Up() {
+	if p.displayStart != 0 {
+		p.displayStart--
+	}
+}
+
+func (p *Passage) Down() {
+	_, h := termbox.Size()
+	if (p.displayEnd - p.displayStart) > (h - 3) {
+		p.displayStart++
+	}
+}
+
 func (p *Passage) ListenToKeys() {
 	p.keyEventService = make(chan termbox.Event)
 	menu.Subscribe(p.keyEventService)
@@ -135,7 +192,20 @@ func (p *Passage) ListenToKeys() {
 					if p.isFocused == true {
 						return
 					}
-
+				case termbox.KeyArrowUp:
+					if p.isFocused == true {
+						go func() {
+							p.Up()
+							p.Draw()
+						}()
+					}
+				case termbox.KeyArrowDown:
+					if p.isFocused == true {
+						go func() {
+							p.Down()
+							p.Draw()
+						}()
+					}
 				case termbox.KeyEnter:
 					if p.isFocused == true {
 						go func() {
