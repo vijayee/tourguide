@@ -2,14 +2,14 @@ package tour
 
 import (
 	"errors"
-	u "github.com/ipfs/go-ipfs/util"
+	logging "github.com/ipfs/go-ipfs/vendor/QmQg1J6vikuXF9oDvm4wpdeAUvvkVEKW1EYDw9HhTMnP2b/go-log"
 	"github.com/nsf/termbox-go"
 	"github.com/vijayee/tourguide/passage"
 	"strconv"
 	"strings"
 )
 
-var log = u.Logger("tour")
+var log = logging.Logger("tour")
 
 // ID is a string identifier for topics
 type ID string

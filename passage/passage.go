@@ -31,6 +31,7 @@ type Passage struct {
 func NewPassage(article Article, foreground termbox.Attribute, background termbox.Attribute) Passage {
 	text := fmt.Sprintf("%+q", article.Text())
 	text = strings.Replace(text, "\\t", "  ", -1)
+	text = strings.Replace(text, "\\\"", "\u0022", -1)
 	if text != "\"\"" && len(text) > 1 {
 		//trim weird quotes
 		if text[0] == '\u0022' {
@@ -43,10 +44,40 @@ func NewPassage(article Article, foreground termbox.Attribute, background termbo
 		text = ""
 	}
 	lines := strings.Split(text, "\\n")
+	for i, line := range lines {
+		lines[i] = lineBreak(line)
+	}
+	lines = strings.Split(strings.Join(lines, "\\n"), "\\n")
 
 	return Passage{article, foreground, background, nil, false, false, "", 0, 0, lines}
 
 }
+func lineBreak(txt string) string {
+	w, _ := termbox.Size()
+	length := w - 7
+	if len(txt) < length {
+		return txt
+	}
+	nsplit := len(txt) / length
+	rsplit := len(txt) % length
+	if rsplit != 0 {
+		nsplit++
+	}
+	split := length
+	last := 0
+	txts := make([]string, nsplit)
+	for i := 0; split < len(txt); i++ {
+		txts[i] = txt[last:split]
+		last = split
+		split += length
+	}
+	if rsplit != 0 {
+		txts[nsplit-1] = txt[last:(last + rsplit)]
+	}
+	//fmt.Printf("lines %f\n", len(txts))
+	return strings.Join(txts, "\\n")
+}
+
 func (p *Passage) drawTitle() {
 	w, _ := termbox.Size()
 	title := p.article.Title()

@@ -133,34 +133,10 @@ var allTopics = []Topic{
 
 var IntroHelloMars = Content{
 	Title: "Hello Mars",
-	Text: `
-	Bacon ipsum dolor amet swine biltong pork loin tail shoulder short loin. Filet mignon spare ribs chuck, kevin ribeye tail pancetta. Biltong salami landjaeger jowl. Ham turkey biltong, swine kielbasa alcatra doner shank rump picanha chuck.
+	Text: `Chapter 1: Hello Mars 
+So long ago.......In a galaxy far far away...Unixians created life and man out of very simple pieces that fit together like lego bricks. They then placed them on the planet earth as stewards and care takers of the primitive planet. Their leader began to give very specific instructions that boomed from the sky to man on the nature of creation, the storage of knowledge, and the Universe which stated "Behold I have created you out of tiny interlocking pieces which store the potential and capacity for great knowledge and attainment.....and....!@#%@$@$$" Their leader looked to the heavens in the direction of mars and became distraught and angry whisper echoed the earth. "Why is Mars still red!?....What do you mean we spent our water budget on earth!?.....how long till development can continue!?!?!.....It was your job to manage the budget!!....I'm mid press-release what will I tell these guys!?!". Their leader then addressed man and said "Hold on, I'll be right back". Man was left confused and alone which soon led to great anger and frustration. It became customary to utter "!@#%@$@$$" in fluent unixian when angry which led to war. The Unixians returned moments later relative to their time but failed to account for relativity in time and discovered man had formed its own civilizations and organizational structures and a network of information called the internet. It was close in concept to the nature of knowledge they had tried to initially bestow upon them but all wrong in its structure and mostly composed of cats. So over-budget, the Unixians could not afford to start over and began to inspire those with the vision to fix the errors in their network of information. One robust enough to reach the stars. The Interplanetary File System began its creation in order to fix the problems created in ignorance. In order to receive the information you must issue commands to initialize with the heavens and your peers. You may use the primitive earth pipe to confirm your commands. ("Warp pipes are on the way!" -The Prophet Mario )
 
-Short loin frankfurter prosciutto tail, bresaola boudin flank picanha ham hock kevin. Beef turducken pork belly cupim. Capicola alcatra prosciutto strip steak brisket turkey chuck shank jerky picanha ground round. Turkey sirloin pork loin picanha t-bone ribeye.
-Bacon ipsum dolor amet swine biltong pork loin tail shoulder short loin. Filet mignon spare ribs chuck, kevin ribeye tail pancetta. Biltong salami landjaeger jowl. Ham turkey biltong, swine kielbasa alcatra doner shank rump picanha chuck.
-
-Short loin frankfurter prosciutto tail, bresaola boudin flank picanha ham hock kevin. Beef turducken pork belly cupim. Capicola alcatra prosciutto strip steak brisket turkey chuck shank jerky picanha ground round. Turkey sirloin pork loin picanha t-bone ribeye.
-Bacon ipsum dolor amet swine biltong pork loin tail shoulder short loin. Filet mignon spare ribs chuck, kevin ribeye tail pancetta. Biltong salami landjaeger jowl. Ham turkey biltong, swine kielbasa alcatra doner shank rump picanha chuck.
-
-Short loin frankfurter prosciutto tail, bresaola boudin flank picanha ham hock kevin. Beef turducken pork belly cupim. Capicola alcatra prosciutto strip steak brisket turkey chuck shank jerky picanha ground round. Turkey sirloin pork loin picanha t-bone ribeye.
-Bacon ipsum dolor amet swine biltong pork loin tail shoulder short loin. Filet mignon spare ribs chuck, kevin ribeye tail pancetta. Biltong salami landjaeger jowl. Ham turkey biltong, swine kielbasa alcatra doner shank rump picanha chuck.
-
-Short loin frankfurter prosciutto tail, bresaola boudin flank picanha ham hock kevin. Beef turducken pork belly cupim. Capicola alcatra prosciutto strip steak brisket turkey chuck shank jerky picanha ground round. Turkey sirloin pork loin picanha t-bone ribeye.
-Bacon ipsum dolor amet swine biltong pork loin tail shoulder short loin. Filet mignon spare ribs chuck, kevin ribeye tail pancetta. Biltong salami landjaeger jowl. Ham turkey biltong, swine kielbasa alcatra doner shank rump picanha chuck.
-
-Short loin frankfurter prosciutto tail, bresaola boudin flank picanha ham hock kevin. Beef turducken pork belly cupim. Capicola alcatra prosciutto strip steak brisket turkey chuck shank jerky picanha ground round. Turkey sirloin pork loin picanha t-bone ribeye.
-Bacon ipsum dolor amet swine biltong pork loin tail shoulder short loin. Filet mignon spare ribs chuck, kevin ribeye tail pancetta. Biltong salami landjaeger jowl. Ham turkey biltong, swine kielbasa alcatra doner shank rump picanha chuck.
-
-Short loin frankfurter prosciutto tail, bresaola boudin flank picanha ham hock kevin. Beef turducken pork belly cupim. Capicola alcatra prosciutto strip steak brisket turkey chuck shank jerky picanha ground round. Turkey sirloin pork loin picanha t-bone ribeye.
-Bacon ipsum dolor amet swine biltong pork loin tail shoulder short loin. Filet mignon spare ribs chuck, kevin ribeye tail pancetta. Biltong salami landjaeger jowl. Ham turkey biltong, swine kielbasa alcatra doner shank rump picanha chuck.
-
-Short loin frankfurter prosciutto tail, bresaola boudin flank picanha ham hock kevin. Beef turducken pork belly cupim. Capicola alcatra prosciutto strip steak brisket turkey chuck shank jerky picanha ground round. Turkey sirloin pork loin picanha t-bone ribeye.
-Bacon ipsum dolor amet swine biltong pork loin tail shoulder short loin. Filet mignon spare ribs chuck, kevin ribeye tail pancetta. Biltong salami landjaeger jowl. Ham turkey biltong, swine kielbasa alcatra doner shank rump picanha chuck.
-
-Short loin frankfurter prosciutto tail, bresaola boudin flank picanha ham hock kevin. Beef turducken pork belly cupim. Capicola alcatra prosciutto strip steak brisket turkey chuck shank jerky picanha ground round. Turkey sirloin pork loin picanha t-bone ribeye.
-Bacon ipsum dolor amet swine biltong pork loin tail shoulder short loin. Filet mignon spare ribs chuck, kevin ribeye tail pancetta. Biltong salami landjaeger jowl. Ham turkey biltong, swine kielbasa alcatra doner shank rump picanha chuck.
-
-Short loin frankfurter prosciutto tail, bresaola boudin flank picanha ham hock kevin. Beef turducken pork belly cupim. Capicola alcatra prosciutto strip steak brisket turkey chuck shank jerky picanha ground round. Turkey sirloin pork loin picanha t-bone ribeye.
+ipfs init | ./tourguide
 	`,
 	verify: func(stdin []byte) (bool, error) {
 		return true, nil
@@ -169,7 +145,17 @@ Short loin frankfurter prosciutto tail, bresaola boudin flank picanha ham hock k
 var IntroTour = Content{
 	Title: "Hello Mars",
 	Text: `
-	how this works
+	Bacon ipsum dolor amet shankle drumstick hamburger capicola. Hamburger cow jerky meatloaf short loin capicola filet mignon shank shankle. Swine turducken jowl ground round landjaeger filet mignon pastrami alcatra. Bresaola tri-tip pastrami hamburger shankle t-bone chuck ham fatback flank alcatra tenderloin doner pork chop prosciutto. Turkey beef ribs ribeye tenderloin shankle, pastrami flank sausage frankfurter leberkas bresaola porchetta. Ham bresaola cow pork belly. Bresaola shank ham, tail beef ribs tenderloin cow.
+
+Cupim beef shank, bacon t-bone swine pancetta hamburger brisket ham cow. Drumstick kevin ham, ribeye doner kielbasa shankle spare ribs brisket pancetta sausage ball tip. Spare ribs landjaeger biltong leberkas pork loin tongue kielbasa jowl ham pastrami chuck doner pig short ribs. Bacon biltong pig, pork kevin short ribs venison. Hamburger swine biltong tri-tip ball tip, pork belly jowl picanha bresaola beef pig tongue meatball.
+
+Kevin biltong venison pastrami flank fatback. Beef ribs chuck kielbasa alcatra shankle short loin jerky, leberkas spare ribs brisket cow salami pastrami tail. Pancetta turkey beef ribs tenderloin chicken, venison bacon flank ham hock andouille shank kevin. Ground round boudin pancetta kielbasa capicola strip steak tenderloin turkey short loin.
+
+Bresaola picanha cupim ground round, beef tri-tip jerky strip steak capicola t-bone. Shoulder prosciutto beef ribs, chuck sausage venison biltong. Sausage shoulder pig hamburger beef ribs short ribs shankle bresaola salami sirloin bacon flank swine. Picanha ball tip pork loin jerky kevin pork short loin meatloaf. Pork belly tongue shankle drumstick rump bresaola frankfurter ground round tail pork chop doner fatback cupim landjaeger kielbasa. Ball tip corned beef chuck pastrami. Pancetta swine leberkas bacon ribeye spare ribs.
+
+Meatball ham kevin, cow venison fatback salami flank leberkas sausage beef ribs andouille shank tongue. Pastrami beef ribs biltong pork loin strip steak, drumstick ham hock picanha ham pork belly. Shankle flank t-bone, corned beef picanha chuck venison. Leberkas chicken corned beef pig salami boudin.
+
+Does your lorem ipsum text long for something a little meatier? Give our generator a try… it’s tasty!
 	`,
 	verify: func(stdin []byte) (bool, error) {
 		var input = string(stdin)
