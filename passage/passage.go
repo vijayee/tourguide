@@ -44,6 +44,7 @@ func NewPassage(article Article, foreground termbox.Attribute, background termbo
 		text = ""
 	}
 	lines := strings.Split(text, "\\n")
+
 	for i, line := range lines {
 		lines[i] = lineBreak(line)
 	}
@@ -74,7 +75,6 @@ func lineBreak(txt string) string {
 	if rsplit != 0 {
 		txts[nsplit-1] = txt[last:(last + rsplit)]
 	}
-	//fmt.Printf("lines %f\n", len(txts))
 	return strings.Join(txts, "\\n")
 }
 
@@ -204,7 +204,7 @@ func (p *Passage) Up() {
 
 func (p *Passage) Down() {
 	_, h := termbox.Size()
-	if (p.displayEnd - p.displayStart) > (h - 3) {
+	if (p.displayEnd - p.displayStart) > (h - 12) {
 		p.displayStart++
 	}
 }
